@@ -42,11 +42,11 @@ typedef struct {
     Cells *CellList;
 }NetVector;
 
-typedef struct {
+/*typedef struct {
     long used;
     long capacity;
     long *area;
-}AreaVector;
+}AreaVector;*/
 
 
 //initial a new net/cell structure
@@ -56,16 +56,16 @@ Cells *cell_new(void);
 //initial a new net/cell vector
 void InitCellVector (CellVector *vector );
 void InitNetVector (NetVector *vector );
-void InitAreaVector (AreaVector *vector );
+void InitAreaVector (NetVector *vector );
 
 void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber);
-void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, AreaVector *arevector);
-void InsertAreaVector (AreaVector *areavector, long area);
+void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *arevector);
+void InsertAreaVector (NetVector *areavector, long area);
 
 int ReadNetFile(const char NetFilename[],
                 CellVector *ACellVector, CellVector *PCellVector,
-                NetVector *NetVector1, AreaVector *areavector);
-int ReadAreaFile(const char AreFilename[], AreaVector *areavector);
+                NetVector *NetVector1, NetVector *areavector);
+int ReadAreaFile(const char AreFilename[], NetVector *areavector);
 
 void Output(const char filename[],
             CellVector *ACellVector, CellVector *PCellVector, NetVector *NetVector1);

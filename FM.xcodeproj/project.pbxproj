@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EDA87EF619EA2378005D7A27 /* DataStructure.c in Sources */ = {isa = PBXBuildFile; fileRef = EDBBCD5919E48BB90013F30A /* DataStructure.c */; };
 		EDBBCD5219E48B620013F30A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = EDBBCD5119E48B620013F30A /* main.c */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		EDBBCD4E19E48B620013F30A /* FM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FM; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDBBCD5119E48B620013F30A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		EDBBCD5919E48BB90013F30A /* DataStructure.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DataStructure.c; sourceTree = "<group>"; };
+		EDBBCD5A19E48BB90013F30A /* DataStructure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStructure.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,8 @@
 		EDBBCD5019E48B620013F30A /* FM */ = {
 			isa = PBXGroup;
 			children = (
+				EDBBCD5A19E48BB90013F30A /* DataStructure.h */,
+				EDBBCD5919E48BB90013F30A /* DataStructure.c */,
 				EDBBCD5119E48B620013F30A /* main.c */,
 			);
 			path = FM;
@@ -119,6 +124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EDBBCD5219E48B620013F30A /* main.c in Sources */,
+				EDA87EF619EA2378005D7A27 /* DataStructure.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +238,7 @@
 				EDBBCD5719E48B620013F30A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

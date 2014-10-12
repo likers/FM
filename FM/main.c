@@ -16,7 +16,7 @@ int main(int argc, const char * argv[]) {
     char filename[15],filename2[15];
     CellVector ACellVector, PCellVector;
     NetVector NetVector1;
-    AreaVector AreaVector1;
+    NetVector AreaVector1;
     
     InitCellVector(&PCellVector);
     InitCellVector(&ACellVector);
@@ -38,7 +38,7 @@ int main(int argc, const char * argv[]) {
         free(ACellVector.NetList);
         free(PCellVector.NetList);
         free(NetVector1.CellList);
-        free(AreaVector1.area);
+        free(AreaVector1.CellList);
         return 0;
     /*}else {
         printf("Error1!: The .net file is necessary, please indicate the .net file like this: \n./team18.out ibm01.net ibm01.are");

@@ -59,11 +59,11 @@ void InitNetVector (NetVector *vector ) {
     vector->CellList = malloc(vector->capacity * sizeof(Cells));
 }
 
-void InitAreaVector (AreaVector *vector ) {
+/*void InitAreaVector (AreaVector *vector ) {
     vector->used = 0;
     vector->capacity = VectorInitialSize;
     vector->area = malloc(vector->capacity * sizeof(long));
-}
+}*/
 
 
 
@@ -93,7 +93,7 @@ void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber) {
     NetHead->next = net;
 }
 
-void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, AreaVector *areavector) {
+void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *areavector) {
     
     Cells *cell;
     Cells *CellHead;
@@ -110,7 +110,7 @@ void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, AreaVe
     if (CellNumber % 2 != 0) {
         //printf("CellNumber: %ld; Area: %ld\n", (CellNumber-1)/2, areavector->area[(CellNumber-1)/2]);
         //printf("NetNumber: %ld\n", NetNumber);
-        cell->area = areavector->area[(CellNumber-1)/2];
+        cell->area = areavector->CellList[(CellNumber-1)/2].area;
     }
     
     //if cellhead->next == NULL, means a new net, then used++
@@ -123,16 +123,19 @@ void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, AreaVe
     CellHead->next = cell;
 }
 
-void InsertAreaVector (AreaVector *areavector, long area){
+void InsertAreaVector (NetVector *areavector, long area){
+    
     if (areavector->used >= areavector->capacity) {
         areavector->capacity = areavector->used*1024;
-        areavector->area = realloc(areavector->area, areavector->capacity * sizeof(long));
+        areavector->CellList = realloc(areavector->CellList, areavector->capacity * sizeof(Cells));
     }
-    areavector->area[areavector->used++] = area;
+    areavector->CellList[areavector->used].area = area;
+    areavector->CellList[areavector->used].cname = areavector->used;
+    areavector->used++;
 }
 
 
-int ReadAreaFile(const char AreFilename[], AreaVector *Areavector1){
+int ReadAreaFile(const char AreFilename[], NetVector *Areavector1){
     FILE *fp;
     char StrLine[25];
     int i;
@@ -163,7 +166,7 @@ int ReadAreaFile(const char AreFilename[], AreaVector *Areavector1){
 
 int ReadNetFile(const char NetFilename[],
                 CellVector *ACellVector, CellVector *PCellVector,
-                NetVector *NetVector1, AreaVector *AreaVector1){
+                NetVector *NetVector1, NetVector *AreaVector1){
     FILE *fp;
     int i;
     char StrLine[25];
