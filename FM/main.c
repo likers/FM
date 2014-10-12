@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
     InitCellVector(&PCellVector);
     InitCellVector(&ACellVector);
     InitNetVector(&NetVector1);
-    InitAreaVector(&AreaVector1);
+    InitNetVector(&AreaVector1);
     
     //strcpy(filename, argv[1]);
     //strcpy(filename2, argv[2]);
