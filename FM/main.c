@@ -17,12 +17,8 @@ int main(int argc, const char * argv[]) {
     CellVector ACellVector, PCellVector;
     NetVector NetVector1;
     NetVector AreaVector1;
-    
-    InitCellVector(&PCellVector);
-    InitCellVector(&ACellVector);
-    InitNetVector(&NetVector1);
-    InitNetVector(&AreaVector1);
-    
+    ArraySize *ArraySize1;
+
     //strcpy(filename, argv[1]);
     //strcpy(filename2, argv[2]);
     //use scanf for debug:
@@ -30,6 +26,13 @@ int main(int argc, const char * argv[]) {
     scanf("%s",filename);
     scanf("%s",filename2);
     
+    ArraySize1 = arraysize_new();
+    GetArraySize(filename, ArraySize1);
+    
+    InitCellVector(&PCellVector, &ArraySize1->TotalPCells);
+    InitCellVector(&ACellVector, &ArraySize1->TotalACells);
+    InitNetVector(&NetVector1, &ArraySize1->TotalNets);
+    InitNetVector(&AreaVector1, &ArraySize1->TotalACells);
     //if ((argv[2] != NULL) && (argv[1] != NULL)){
         ReadAreaFile(filename2, &AreaVector1);
         ReadNetFile(filename, &ACellVector, &PCellVector, &NetVector1, &AreaVector1);
@@ -39,6 +42,7 @@ int main(int argc, const char * argv[]) {
         free(PCellVector.NetList);
         free(NetVector1.CellList);
         free(AreaVector1.CellList);
+        free(ArraySize1);
         return 0;
     /*}else {
         printf("Error1!: The .net file is necessary, please indicate the .net file like this: \n./team18.out ibm01.net ibm01.are");

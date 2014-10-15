@@ -22,7 +22,6 @@ Nets *net_new(void){
     
     newlist->next = NULL;
     newlist->prev = NULL;
-    newlist->head = NULL;
     newlist->nname = 0;
     
     return (newlist);
@@ -36,7 +35,6 @@ Cells *cell_new(void){
         return NULL;
     }
     
-    newlist->head = NULL;
     newlist->next = NULL;
     newlist->prev = NULL;
     
@@ -46,48 +44,39 @@ Cells *cell_new(void){
     return (newlist);
 }
 
+ArraySize *arraysize_new(void){
+    struct arraysize *newarraysize;
+    newarraysize = malloc(sizeof(struct arraysize));
+    if (newarraysize == NULL)
+    {
+        return NULL;
+    }
+    newarraysize->TotalACells = 0;
+    newarraysize->TotalNets = 0;
+    newarraysize->TotalPCells = 0;
+    return (newarraysize);
+}
 
-void InitCellVector (CellVector *vector ) {
-    vector->used = 0;
-    vector->capacity = VectorInitialSize;
+
+void InitCellVector (CellVector *vector, long *size) {
+    vector->capacity = *size;
     vector->NetList = malloc(vector->capacity * sizeof(Nets));
 }
 
-void InitNetVector (NetVector *vector ) {
-    vector->used = 0;
-    vector->capacity = VectorInitialSize;
+void InitNetVector (NetVector *vector, long *size) {
+    vector->capacity = *size;
     vector->CellList = malloc(vector->capacity * sizeof(Cells));
 }
-
-/*void InitAreaVector (AreaVector *vector ) {
-    vector->used = 0;
-    vector->capacity = VectorInitialSize;
-    vector->area = malloc(vector->capacity * sizeof(long));
-}*/
-
-
 
 void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber) {
     Nets *net;
     Nets *NetHead;
     
-    if (CellNumber > vector->used) {
-        vector->used = CellNumber;
-    }
-    
-    if (vector->used >= vector->capacity) {
-        vector->capacity = vector->used*2;
-        vector->NetList = realloc(vector->NetList, vector->capacity * sizeof(Nets));
-    }
-    
     NetHead = &vector->NetList[CellNumber];
     net = net_new();
     net->nname = NetNumber;
     
-    if (NetHead->next == NULL) {
-        vector->used++;
-    }
-    while (NetHead->next != NULL) {
+    while (NetHead->next) {
         NetHead = NetHead->next;
     }
     NetHead->next = net;
@@ -97,67 +86,85 @@ void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVec
     
     Cells *cell;
     Cells *CellHead;
-
-    if (vector->used + 30 >= vector->capacity) {
-        vector->capacity = vector->used *1024;
-        vector->CellList = realloc(vector->CellList, vector->capacity * sizeof(Cells));
-    }
     
     CellHead = &vector->CellList[NetNumber];
     cell = cell_new();
     cell->cname = CellNumber;
+    
     //determined this is an axxx cell, has area.
     if (CellNumber % 2 != 0) {
-        //printf("CellNumber: %ld; Area: %ld\n", (CellNumber-1)/2, areavector->area[(CellNumber-1)/2]);
-        //printf("NetNumber: %ld\n", NetNumber);
         cell->area = areavector->CellList[(CellNumber-1)/2].area;
     }
     
-    //if cellhead->next == NULL, means a new net, then used++
-    if (CellHead->next == NULL) {
-        vector->used++;
-    }
     while (CellHead->next != NULL) {
         CellHead = CellHead->next;
     }
     CellHead->next = cell;
 }
 
-void InsertAreaVector (NetVector *areavector, long area){
-    
-    if (areavector->used >= areavector->capacity) {
-        areavector->capacity = areavector->used*1024;
-        areavector->CellList = realloc(areavector->CellList, areavector->capacity * sizeof(Cells));
-    }
-    areavector->CellList[areavector->used].area = area;
-    areavector->CellList[areavector->used].cname = areavector->used;
-    areavector->used++;
+void InsertAreaVector (NetVector *areavector, long area, long cellnumber){
+    Cells *CellHead;
+    CellHead = &areavector->CellList[cellnumber];
+    CellHead->area = area;
+    CellHead->cname = cellnumber;
 }
+
+int GetArraySize(const char NetFilename[], ArraySize *ArraySize1){
+    
+    FILE *fp;
+    char StrLine[15];
+    int i;
+    long Total = 0;
+    fp = fopen(NetFilename, "r");
+    if (!fp) {
+        printf("Error2!: Can't find the file: %s. Please try again with correct file name\n",NetFilename);
+        return -1;
+    }
+    
+    for (i = 0; i < 5; i++) {
+        fgets(StrLine, 25, fp);
+        if (i == 2) {
+            ArraySize1->TotalNets = atol(&StrLine[0]);
+        }
+        if (i == 3) {
+            Total = atol(&StrLine[0]);
+        }
+        if (i == 4) {
+            ArraySize1->TotalACells = atol(&StrLine[0]);
+        }
+    }
+    ArraySize1->TotalPCells = Total - ArraySize1->TotalACells - 1;
+    fclose(fp);
+    return 0;
+}
+
 
 
 int ReadAreaFile(const char AreFilename[], NetVector *Areavector1){
     FILE *fp;
     char StrLine[25];
     int i;
-    long area;
+    long j = 0;
+    long area = 0;
     
     if((fp = fopen(AreFilename,"r")) == NULL){
         printf("Error2!: Can't find the file: %s. Please try again with correct file name\n",AreFilename);
         return -1;
     }
     
-    area = 0;
-    while (!feof(fp)) {
+    while (fgets(StrLine, 25, fp) != NULL) {
         i = 0;
-        fgets(StrLine, 25, fp);
+        
+        //only need to read aXXX cells, all pXXX cells' area == 0
         if (StrLine[0] == 'a') {
             while (StrLine[i] != ' ') {
                 i++;
             }
             area = atol(&StrLine[i+1]);
             //printf("%ld\n",area);
-            InsertAreaVector(Areavector1, area);
+            InsertAreaVector(Areavector1, area, j);
         } else break;
+        j++;
     }
     fclose(fp);
     return 0;
@@ -182,9 +189,7 @@ int ReadNetFile(const char NetFilename[],
     for (i = 0; i < 5; i++) {
         fgets(StrLine, 25, fp);
     }
-    
-    while (!feof(fp)){
-        fgets(StrLine,25,fp);
+    while (fgets(StrLine,25,fp) != NULL){
         i = 0;
         
         //locate 's', get the net number tstrchr(). function works but a little bit complicated than this
@@ -197,6 +202,7 @@ int ReadNetFile(const char NetFilename[],
         
         //use atol to convert cellnumber to long integer
         cellnumber = atol(&StrLine[1]);
+        
         if (StrLine[0] == 'p') {
             InsertCellVector(PCellVector, cellnumber, netnumber);
             InsertNetVector(NetVector1, cellnumber*2, netnumber, AreaVector1);
@@ -204,9 +210,8 @@ int ReadNetFile(const char NetFilename[],
             InsertCellVector(ACellVector, cellnumber, netnumber);
             InsertNetVector(NetVector1, cellnumber*2+1, netnumber, AreaVector1);
         }
-        
     }
-    
+        
     fclose(fp);
     return 0;
 }
@@ -241,7 +246,7 @@ void Output(const char filename[],
     }
     
     //write netvector into file:
-    for (i = 1; i <= NetVector1->used; i++) {
+    for (i = 1; i <= NetVector1->capacity; i++) {
         fprintf(fp, "net %ld: ",i);
         CellHead = &NetVector1->CellList[i];
         while (CellHead->next != NULL) {
