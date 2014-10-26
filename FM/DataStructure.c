@@ -37,6 +37,7 @@ Cells *cell_new(void){
     newlist->next = NULL;
     newlist->cname = 0;
     newlist->area = 0;
+    newlist->partition = 2;
     
     return (newlist);
 }
@@ -78,7 +79,6 @@ void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber) {
     Nets *net;
     Nets *NetHead;
     
-    
     NetHead = &vector->NetList[CellNumber];
     net = net_new();
     net->nname = NetNumber;
@@ -91,7 +91,7 @@ void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber) {
 }
 
 
-void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *areavector) {
+void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *freecell) {
     
     Cells *cell;
     Cells *CellHead;
@@ -101,7 +101,7 @@ void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVec
     cell->cname = CellNumber;
     //determined this is an axxx cell, has area.
     if (CellNumber % 2 != 0) {
-        cell->area = areavector->CellList[(CellNumber-1)/2].area;
+        cell->area = freecell->CellList[(CellNumber-1)/2].area;
     }
     
     while (CellHead->next != NULL) {
@@ -110,14 +110,26 @@ void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVec
     CellHead->next = cell;
 }
 
-void InsertAreaVector (NetVector *areavector, long area, long cellnumber){
+void InsertFreeACell (NetVector *freeacell, long area, long cellnumber){
     Cells *CellHead;
-    CellHead = &areavector->CellList[cellnumber];
+    CellHead = &freeacell->CellList[cellnumber];
     CellHead->area = area;
     CellHead->cname = cellnumber;
-    //printf("cname:%ld\n",CellHead->cname);
+    CellHead->partition = 2;
     CellHead->next = NULL;
     
+}
+
+void InsertFreePCell (NetVector *freepcell){
+    Cells *CellHead;
+    long i;
+    for (i = 0; i < freepcell->capacity; i++) {
+        CellHead = &freepcell->CellList[i];
+        CellHead->cname = i+1;
+        CellHead->area = 0;
+        CellHead->partition = 2;
+        CellHead->next = NULL;
+    }
 }
 
 int GetArraySize(const char NetFilename[], ArraySize *ArraySize1){
@@ -150,7 +162,7 @@ int GetArraySize(const char NetFilename[], ArraySize *ArraySize1){
 }
 
 
-int ReadAreaFile(const char AreFilename[], NetVector *Areavector1){
+int ReadAreaFile(const char AreFilename[], NetVector *freeacell, NetVector *freepcell){
     FILE *fp;
     char StrLine[25];
     int i;
@@ -171,9 +183,8 @@ int ReadAreaFile(const char AreFilename[], NetVector *Areavector1){
                 i++;
             }
             area = atol(&StrLine[i+1]);
-            //printf("%ld\n",area);
-            InsertAreaVector(Areavector1, area, j);
-        } else break;
+            InsertFreeACell(freeacell, area, j);
+        } else InsertFreePCell(freepcell);
         j++;
     }
     fclose(fp);
@@ -183,7 +194,7 @@ int ReadAreaFile(const char AreFilename[], NetVector *Areavector1){
 
 int ReadNetFile(const char NetFilename[],
                 CellVector *ACellVector, CellVector *PCellVector,
-                NetVector *NetVector1, NetVector *AreaVector1){
+                NetVector *NetVector1, NetVector *freeacell){
     FILE *fp;
     int i;
     char StrLine[25];
@@ -215,10 +226,10 @@ int ReadNetFile(const char NetFilename[],
         
         if (StrLine[0] == 'p') {
             InsertCellVector(PCellVector, cellnumber, netnumber);
-            InsertNetVector(NetVector1, cellnumber*2, netnumber, AreaVector1);
+            InsertNetVector(NetVector1, cellnumber*2, netnumber, freeacell);
         } else if (StrLine[0] == 'a'){
             InsertCellVector(ACellVector, cellnumber, netnumber);
-            InsertNetVector(NetVector1, cellnumber*2+1, netnumber, AreaVector1);
+            InsertNetVector(NetVector1, cellnumber*2+1, netnumber, freeacell);
         }
     }
         

@@ -17,15 +17,27 @@ net 16: a12 p5
 net 17: a13 p6 
 
 
-p1: net 1 net 15 
+p1: net 1 net 27 net 12 
 p2: net 2 
 p3: net 3 
 p4: net 12 
 p5: net 16 
 p6: net 17 
-p7: net 15 
-p8: net 1 net 3 
-a0: net 1 net 4 
+p7: net 1 net 4 net 15 
+p8: net 1 net 5 
+p9: net 2 net 6 
+p10: net 2 net 7 
+p11: net 4 net 5 net 8 
+p12: net 5 net 9 
+p13: net 5 net 6 net 10 
+p14: net 3 net 7 net 11 
+p15: net 8 net 10 net 12 
+p16: net 9 net 13 
+p17: net 9 net 10 net 14 
+p18: net 10 net 11 net 15 
+p19: net 13 net 16 
+p20: net 10 net 14 net 17 
+a0: net 1 net 4 net 15 
 a1: net 1 net 5 
 a2: net 2 net 6 
 a3: net 2 net 7 

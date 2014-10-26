@@ -20,6 +20,9 @@ typedef struct cell {
     long cname;
     struct cell *next;
     long area;
+    
+    //0 means on the left; 1 means on the right
+    int partition;
 }Cells;
 
 typedef struct net {
@@ -59,15 +62,17 @@ int InitCellVector (CellVector *vector, long size);
 int InitNetVector (NetVector *vector, long size);
 
 void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber);
-void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *arevector);
-void InsertAreaVector (NetVector *areavector, long area, long cname);
+void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *freecell);
+
+void InsertFreeACell (NetVector *freeacell, long area, long cname);
+void InsertFreePCell (NetVector *freepcell);
 
 int GetArraySize(const char NetFilename[], ArraySize *ArraySize1);
 
 int ReadNetFile(const char NetFilename[],
                 CellVector *ACellVector, CellVector *PCellVector,
-                NetVector *NetVector1, NetVector *areavector);
-int ReadAreaFile(const char AreFilename[], NetVector *areavector);
+                NetVector *NetVector1, NetVector *freeacell);
+int ReadAreaFile(const char AreFilename[], NetVector *freeacell, NetVector *freepcell);
 
 void Output(const char filename[],
             CellVector *ACellVector, CellVector *PCellVector, NetVector *NetVector1);
