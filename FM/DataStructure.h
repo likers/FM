@@ -18,13 +18,13 @@
 
 typedef struct cell {
     long cname;
-    struct cell *next, *prev;
+    struct cell *next;
     long area;
 }Cells;
 
 typedef struct net {
     long nname;
-    struct net *next, *prev;
+    struct net *next;
 }Nets;
 
 //store the total number of nets and cells
@@ -35,13 +35,13 @@ typedef struct arraysize {
 }ArraySize;
 
 // Each slot of the CellVector is a cell, stores the nets where this cell belongs
-typedef struct {
+typedef struct cellvector {
     long capacity;
     Nets *NetList;
 }CellVector;
 
 // Each slot of the NetVector is a net, stores the cells it contains
-typedef struct {
+typedef struct netvector{
     long capacity;
     Cells *CellList;
 }NetVector;
@@ -55,8 +55,8 @@ Cells *cell_new(void);
 ArraySize *arraysize_new (void);
 
 //initial a new net/cell vector
-void InitCellVector (CellVector *vector, long *size);
-void InitNetVector (NetVector *vector, long *size);
+int InitCellVector (CellVector *vector, long size);
+int InitNetVector (NetVector *vector, long size);
 
 void InsertCellVector (CellVector *vector, long CellNumber, long NetNumber);
 void InsertNetVector (NetVector *vector, long CellNumber, long NetNumber, NetVector *arevector);
